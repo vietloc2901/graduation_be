@@ -1,0 +1,22 @@
+entity Orders{
+	@Id id Long,
+    userId Long,
+    status String,
+    name String,
+    receiverName String,
+    phone String,
+    receiverPhone String,
+    email String,
+    address String,
+    discount Float,
+    note String,
+    createDate ZonedDateTime,
+    createBy String,
+    lastModifiedDate ZonedDateTime,
+    lastModifiedBy String
+}
+
+dto * with mapstruct
+paginate * with pagination
+service * with serviceClass
+service * with serviceImpl

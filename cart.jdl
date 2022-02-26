@@ -1,0 +1,11 @@
+entity Cart{
+	@Id id Long,
+    userId Long,
+    status Boolean,
+    createDate ZonedDateTime
+}
+
+dto * with mapstruct
+paginate * with pagination
+service * with serviceClass
+service * with serviceImpl

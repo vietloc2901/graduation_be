@@ -1,0 +1,17 @@
+
+entity Catalogs {
+	@Id id Long,
+    code String,
+    name String,
+    sortOrder Integer,
+    parentId Long,
+    createDate ZonedDateTime,
+    createBy String,
+    lastModifiedDate ZonedDateTime,
+    lastModifiedBy String
+}
+
+dto * with mapstruct
+paginate * with pagination
+service * with serviceClass
+service * with serviceImpl

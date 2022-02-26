@@ -1,0 +1,11 @@
+entity ProductSpecs{
+	@Id id Long,
+	key String,
+    value String,
+   	productId Long
+}
+
+dto * with mapstruct
+paginate * with pagination
+service * with serviceClass
+service * with serviceImpl

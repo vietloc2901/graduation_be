@@ -1,0 +1,12 @@
+entity CartItems{
+	@Id id Long,
+	cartId Long,
+    productId Long,
+    quantity Integer,
+    price BigDecimal
+}
+
+dto * with mapstruct
+paginate * with pagination
+service * with serviceClass
+service * with serviceImpl

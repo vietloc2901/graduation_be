@@ -1,0 +1,12 @@
+entity ProductsPrice{
+	@Id id Long,
+    productId Long,
+    price BigDecimal,
+    applyDate ZonedDateTime,
+    createBy String
+}
+
+dto * with mapstruct
+paginate * with pagination
+service * with serviceClass
+service * with serviceImpl

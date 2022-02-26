@@ -1,0 +1,21 @@
+entity Products {
+	@Id id Long,
+    code String,
+    name String,
+    createDate ZonedDateTime,
+    createBy String,
+    lastModifiedDate ZonedDateTime,
+    lastModifiedBy String,
+    image String,
+    detailImages String,
+    brand String,
+    productDetails String,
+    descriptionDocument String,
+    video String,
+    catalogId Integer
+}
+
+dto * with mapstruct
+paginate * with pagination
+service * with serviceClass
+service * with serviceImpl

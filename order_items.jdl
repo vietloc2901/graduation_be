@@ -1,0 +1,13 @@
+entity OrderItems{
+	@Id id Long,
+    orderId Long,
+    productId Long,
+    quantity Integer,
+    price BigDecimal,
+    createDate ZonedDateTime
+}
+
+dto * with mapstruct
+paginate * with pagination
+service * with serviceClass
+service * with serviceImpl
