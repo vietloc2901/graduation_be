@@ -1,7 +1,9 @@
 package locnv.haui.service;
 
+import java.util.List;
 import java.util.Optional;
 import locnv.haui.service.dto.CatalogsDTO;
+import locnv.haui.service.dto.ServiceResult;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -16,6 +18,8 @@ public interface CatalogsService {
      * @return the persisted entity.
      */
     CatalogsDTO save(CatalogsDTO catalogsDTO);
+
+    ServiceResult<CatalogsDTO> create(CatalogsDTO catalogsDTO);
 
     /**
      * Partially updates a catalogs.
@@ -46,5 +50,13 @@ public interface CatalogsService {
      *
      * @param id the id of the entity.
      */
-    void delete(Long id);
+//    void delete(Long id);
+
+    ServiceResult<?> delete(Long id);
+
+    List<CatalogsDTO> getCatalogsForTree(CatalogsDTO catalogsDTO);
+
+    ServiceResult<CatalogsDTO> checkExist(String code);
+
+    ServiceResult<CatalogsDTO> update(CatalogsDTO catalogsDTO);
 }

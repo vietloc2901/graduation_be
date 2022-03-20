@@ -8,6 +8,7 @@ import java.util.Optional;
 import locnv.haui.repository.ProductSpecsRepository;
 import locnv.haui.service.ProductSpecsService;
 import locnv.haui.service.dto.ProductSpecsDTO;
+import locnv.haui.service.dto.ServiceResult;
 import locnv.haui.web.rest.errors.BadRequestAlertException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -177,5 +178,12 @@ public class ProductSpecsResource {
             .noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
             .build();
+    }
+
+    @PostMapping("/product-specs/delete")
+    public ResponseEntity<?> delete(@RequestBody ProductSpecsDTO productSpecsDTO){
+        log.debug("REST to delete product spec");
+        ServiceResult rs = productSpecsService.deleteProductSpec(productSpecsDTO);
+        return ResponseEntity.ok(rs);
     }
 }

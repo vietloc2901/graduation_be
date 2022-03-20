@@ -2,6 +2,7 @@ package locnv.haui.service.dto;
 
 import java.io.Serializable;
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -26,6 +27,16 @@ public class CatalogsDTO implements Serializable {
     private ZonedDateTime lastModifiedDate;
 
     private String lastModifiedBy;
+
+    private List<CatalogsDTO> children;
+
+    public List<CatalogsDTO> getChildren() {
+        return children;
+    }
+
+    public void setChildren(List<CatalogsDTO> children) {
+        this.children = children;
+    }
 
     public Long getId() {
         return id;

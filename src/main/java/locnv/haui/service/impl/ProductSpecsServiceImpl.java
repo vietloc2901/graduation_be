@@ -1,15 +1,18 @@
 package locnv.haui.service.impl;
 
+import java.util.Objects;
 import java.util.Optional;
 import locnv.haui.domain.ProductSpecs;
 import locnv.haui.repository.ProductSpecsRepository;
 import locnv.haui.service.ProductSpecsService;
 import locnv.haui.service.dto.ProductSpecsDTO;
+import locnv.haui.service.dto.ServiceResult;
 import locnv.haui.service.mapper.ProductSpecsMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -72,5 +75,18 @@ public class ProductSpecsServiceImpl implements ProductSpecsService {
     public void delete(Long id) {
         log.debug("Request to delete ProductSpecs : {}", id);
         productSpecsRepository.deleteById(id);
+    }
+
+    @Override
+    public ServiceResult deleteProductSpec(ProductSpecsDTO productSpecsDTO) {
+        if(Objects.isNull(productSpecsDTO.getId())){
+            return new ServiceResult(null, HttpStatus.INTERNAL_SERVER_ERROR, "Cannot delete a non Id objects");
+        }
+        try{
+            productSpecsRepository.deleteById(productSpecsDTO.getId());
+            return new ServiceResult(null, HttpStatus.OK, "Xóa thành công");
+        }catch (Exception e){
+            return new ServiceResult(null, HttpStatus.INTERNAL_SERVER_ERROR, "Lỗi khi xóa thuộc tính. Thử lại sau");
+        }
     }
 }

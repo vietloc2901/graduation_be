@@ -2,6 +2,7 @@ package locnv.haui.service.dto;
 
 import java.io.Serializable;
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -16,6 +17,16 @@ public class CartDTO implements Serializable {
     private Boolean status;
 
     private ZonedDateTime createDate;
+
+    List<CartItemsDTO> listItem;
+
+    public List<CartItemsDTO> getListItem() {
+        return listItem;
+    }
+
+    public void setListItem(List<CartItemsDTO> listItem) {
+        this.listItem = listItem;
+    }
 
     public Long getId() {
         return id;

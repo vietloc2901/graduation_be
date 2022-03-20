@@ -1,27 +1,36 @@
 package locnv.haui.web.rest;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import locnv.haui.domain.User;
 import locnv.haui.repository.ProductsRepository;
 import locnv.haui.service.ProductsService;
-import locnv.haui.service.dto.ProductsDTO;
+import locnv.haui.service.UserService;
+import locnv.haui.service.dto.*;
 import locnv.haui.web.rest.errors.BadRequestAlertException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import tech.jhipster.web.util.HeaderUtil;
 import tech.jhipster.web.util.PaginationUtil;
 import tech.jhipster.web.util.ResponseUtil;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.time.ZonedDateTime;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * REST controller for managing {@link locnv.haui.domain.Products}.
@@ -41,9 +50,13 @@ public class ProductsResource {
 
     private final ProductsRepository productsRepository;
 
-    public ProductsResource(ProductsService productsService, ProductsRepository productsRepository) {
+    @Autowired
+    private final UserService userService;
+
+    public ProductsResource(ProductsService productsService, ProductsRepository productsRepository, UserService userService) {
         this.productsService = productsService;
         this.productsRepository = productsRepository;
+        this.userService = userService;
     }
 
     /**
@@ -74,13 +87,12 @@ public class ProductsResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated productsDTO,
      * or with status {@code 400 (Bad Request)} if the productsDTO is not valid,
      * or with status {@code 500 (Internal Server Error)} if the productsDTO couldn't be updated.
-     * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PutMapping("/products/{id}")
     public ResponseEntity<ProductsDTO> updateProducts(
         @PathVariable(value = "id", required = false) final Long id,
         @RequestBody ProductsDTO productsDTO
-    ) throws URISyntaxException {
+    ) {
         log.debug("REST request to update Products : {}, {}", id, productsDTO);
         if (productsDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
@@ -109,13 +121,12 @@ public class ProductsResource {
      * or with status {@code 400 (Bad Request)} if the productsDTO is not valid,
      * or with status {@code 404 (Not Found)} if the productsDTO is not found,
      * or with status {@code 500 (Internal Server Error)} if the productsDTO couldn't be updated.
-     * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PatchMapping(value = "/products/{id}", consumes = { "application/json", "application/merge-patch+json" })
     public ResponseEntity<ProductsDTO> partialUpdateProducts(
         @PathVariable(value = "id", required = false) final Long id,
         @RequestBody ProductsDTO productsDTO
-    ) throws URISyntaxException {
+    ) {
         log.debug("REST request to partial update Products partially : {}, {}", id, productsDTO);
         if (productsDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
@@ -157,10 +168,10 @@ public class ProductsResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the productsDTO, or with status {@code 404 (Not Found)}.
      */
     @GetMapping("/products/{id}")
-    public ResponseEntity<ProductsDTO> getProducts(@PathVariable Long id) {
+    public ResponseEntity<?> getProducts(@PathVariable Long id) {
         log.debug("REST request to get Products : {}", id);
-        Optional<ProductsDTO> productsDTO = productsService.findOne(id);
-        return ResponseUtil.wrapOrNotFound(productsDTO);
+        ServiceResult rs = productsService.searchProduct(id);
+        return ResponseEntity.ok(rs);
     }
 
     /**
@@ -177,5 +188,105 @@ public class ProductsResource {
             .noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
             .build();
+    }
+
+    @PostMapping("/products/search")
+    public ResponseEntity<?> searchProducts(@RequestBody ProductsDTO productsDTO,
+                                            @RequestParam(value = "page", defaultValue = "1") int page,
+                                            @RequestParam(value = "pageSize", defaultValue = "10") int pageSize){
+        DataDTO<ProductFullDataDTO> result =productsService.search(productsDTO, page, pageSize);
+        return ResponseEntity.ok(result);
+    }
+
+    @PostMapping("/products/searchForViewProduct")
+    public ResponseEntity<?> searchForViewProduct(@RequestBody ProductsDTO productsDTO,
+                                            @RequestParam(value = "page", defaultValue = "1") int page,
+                                            @RequestParam(value = "pageSize", defaultValue = "10") int pageSize){
+        DataDTO<ProductFullDataDTO> result =productsService.searchForViewPage(productsDTO, page, pageSize);
+        return ResponseEntity.ok(result);
+    }
+
+    @PostMapping("/products/specialSearch")
+    public ResponseEntity<?> searchProductsForView(@RequestBody ProductsDTO productsDTO){
+        DataDTO<ProductFullDataDTO> res = productsService.searchForView((productsDTO));
+        return ResponseEntity.ok(res);
+    }
+
+    @PostMapping("/products/searchByCatalogNoChild")
+    public ResponseEntity<?> searchByCatalogNoChild(){
+        DataDTO<ProductFullDataDTO> res = productsService.searchByCatalogNoChild();
+        return ResponseEntity.ok(res);
+    }
+
+    @PostMapping(value= "/products/create", consumes = { "multipart/form-data" })
+    public ResponseEntity<?> createProducts(
+        @RequestParam("image")MultipartFile image,
+        @RequestParam("catalog")Long catalog,
+        @RequestParam("code") String code,
+        @RequestParam("name") String name,
+        @RequestParam("brand") String brand,
+        @RequestParam("price") Double price,
+        @RequestParam("productDetails") String productDetails,
+        @RequestParam("descriptionDocument") String descriptionDocument,
+        @RequestParam("status") Integer status,
+        @RequestParam("spec") String spec) throws JsonProcessingException {
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        List<ProductSpecsDTO> specs = mapper.readValue(spec, new TypeReference<List<ProductSpecsDTO>>(){});
+        ProductsDTO productsDTO = new ProductsDTO();
+        Optional<User> user = userService.getUserWithAuthorities();
+        if(user.isPresent()){
+            productsDTO.setCreateBy(user.get().getLogin());
+            productsDTO.setCreateDate(ZonedDateTime.now());
+            productsDTO.setLastModifiedBy(user.get().getLogin());
+            productsDTO.setLastModifiedDate(ZonedDateTime.now());
+        }
+        productsDTO.setCatalogId(catalog);
+        productsDTO.setCode(code);
+        productsDTO.setName(name);
+        productsDTO.setBrand(brand);
+        productsDTO.setProductDetails(productDetails);
+        productsDTO.setDescriptionDocument(descriptionDocument);
+        productsDTO.setStatus(status == 1);
+        productsDTO.setPrice(price);
+        ServiceResult fullDataDTO = productsService.create(image, productsDTO, specs);
+        return ResponseEntity.ok(fullDataDTO);
+    }
+
+    @PostMapping(value= "/products/update", consumes = { "multipart/form-data" })
+    public ResponseEntity<?> updateProduct(
+        @RequestParam("id") Long id,
+        @RequestParam(value = "image", required = false)MultipartFile image,
+        @RequestParam("catalog")Long catalog,
+        @RequestParam("code") String code,
+        @RequestParam("name") String name,
+        @RequestParam("brand") String brand,
+        @RequestParam("price") Double price,
+        @RequestParam("productDetails") String productDetails,
+        @RequestParam("descriptionDocument") String descriptionDocument,
+        @RequestParam("status") Integer status,
+        @RequestParam("spec") String spec) throws JsonProcessingException {
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        List<ProductSpecsDTO> specs = mapper.readValue(spec, new TypeReference<List<ProductSpecsDTO>>(){});
+        ProductsDTO productsDTO = new ProductsDTO();
+        Optional<User> user = userService.getUserWithAuthorities();
+        if(user.isPresent()){
+            productsDTO.setLastModifiedBy(user.get().getLogin());
+            productsDTO.setLastModifiedDate(ZonedDateTime.now());
+        }
+        productsDTO.setId(id);
+        productsDTO.setCatalogId(catalog);
+        productsDTO.setCode(code);
+        productsDTO.setName(name);
+        productsDTO.setBrand(brand);
+        productsDTO.setProductDetails(productDetails);
+        productsDTO.setDescriptionDocument(descriptionDocument);
+        productsDTO.setStatus(status == 1);
+        productsDTO.setPrice(price);
+        ServiceResult fullDataDTO = productsService.update(image, productsDTO, specs);
+        return ResponseEntity.ok(fullDataDTO);
     }
 }

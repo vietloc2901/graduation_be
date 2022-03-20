@@ -1,15 +1,25 @@
 package locnv.haui.service.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+
 import locnv.haui.domain.Cart;
+import locnv.haui.domain.CartItems;
+import locnv.haui.domain.User;
+import locnv.haui.repository.CartItemsRepository;
 import locnv.haui.repository.CartRepository;
+import locnv.haui.repository.ProductsCustomRepository;
 import locnv.haui.service.CartService;
-import locnv.haui.service.dto.CartDTO;
+import locnv.haui.service.UserService;
+import locnv.haui.service.dto.*;
 import locnv.haui.service.mapper.CartMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,9 +36,18 @@ public class CartServiceImpl implements CartService {
 
     private final CartMapper cartMapper;
 
-    public CartServiceImpl(CartRepository cartRepository, CartMapper cartMapper) {
+    private final UserService userService;
+
+    private final CartItemsRepository cartItemsRepository;
+
+    private final ProductsCustomRepository productsCustomRepository;
+
+    public CartServiceImpl(CartRepository cartRepository, CartMapper cartMapper, UserService userService, CartItemsRepository cartItemsRepository, ProductsCustomRepository productsCustomRepository) {
         this.cartRepository = cartRepository;
         this.cartMapper = cartMapper;
+        this.userService = userService;
+        this.cartItemsRepository = cartItemsRepository;
+        this.productsCustomRepository = productsCustomRepository;
     }
 
     @Override
@@ -72,5 +91,35 @@ public class CartServiceImpl implements CartService {
     public void delete(Long id) {
         log.debug("Request to delete Cart : {}", id);
         cartRepository.deleteById(id);
+    }
+
+    @Override
+    public ServiceResult getCart() {
+        Optional<User> login = userService.getUserWithAuthorities();
+        if(login.isEmpty()){
+            return new ServiceResult(null, HttpStatus.UNAUTHORIZED, "Chưa đăng nhập");
+        }
+        Cart cart = cartRepository.findByUserIdAndStatus(login.get().getId(), true);
+        if(Objects.isNull(cart)){
+            return new ServiceResult(null, HttpStatus.OK, "Giỏ hàng chưa tạo");
+        }
+        List<CartItems> list = cartItemsRepository.findAllByCartId(cart.getId());
+        CartDTO  rs = cartMapper.toDto(cart);
+        List<CartItemsDTO> listRes = new ArrayList<>();
+        for(CartItems item : list){
+            ProductsDTO temp = new ProductsDTO();
+            temp.setId(item.getProductId());
+            List<ProductFullDataDTO> a = productsCustomRepository.search(temp,0,5);
+            CartItemsDTO add = new CartItemsDTO();
+            add.setId(item.getId());
+            add.setCartId(cart.getId());
+            add.setPrice(a.get(0).getPrice());
+            add.setQuantity(item.getQuantity());
+            add.setProductImage(a.get(0).getImage());
+            add.setProductName(a.get(0).getName());
+            listRes.add(add);
+        }
+        rs.setListItem(listRes);
+        return new ServiceResult(rs, HttpStatus.OK, "Data nè");
     }
 }

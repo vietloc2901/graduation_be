@@ -176,4 +176,9 @@ public class CartResource {
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
             .build();
     }
+
+    @PostMapping("/cart/getCart")
+    public ResponseEntity<?> getCart(){
+        return ResponseEntity.ok(cartService.getCart());
+    }
 }

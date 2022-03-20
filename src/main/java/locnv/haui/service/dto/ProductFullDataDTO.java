@@ -1,14 +1,12 @@
 package locnv.haui.service.dto;
 
-import java.io.Serializable;
+import locnv.haui.domain.ProductsPrice;
+
+import java.math.BigDecimal;
 import java.time.ZonedDateTime;
-import java.util.Objects;
+import java.util.List;
 
-/**
- * A DTO for the {@link locnv.haui.domain.Products} entity.
- */
-public class ProductsDTO implements Serializable {
-
+public class ProductFullDataDTO {
     private Long id;
 
     private String code;
@@ -37,26 +35,20 @@ public class ProductsDTO implements Serializable {
 
     private Long catalogId;
 
+    private BigDecimal price;
+
+    private List<ProductSpecsDTO> specsDTOList;
+
     private Boolean status;
 
-    private Double price;
+    private String catalogName;
 
-    private String orderType;
-
-    public String getOrderType() {
-        return orderType;
+    public String getCatalogName() {
+        return catalogName;
     }
 
-    public void setOrderType(String orderType) {
-        this.orderType = orderType;
-    }
-
-    public Double getPrice() {
-        return price;
-    }
-
-    public void setPrice(Double price) {
-        this.price = price;
+    public void setCatalogName(String catalogName) {
+        this.catalogName = catalogName;
     }
 
     public Boolean getStatus() {
@@ -179,45 +171,19 @@ public class ProductsDTO implements Serializable {
         this.catalogId = catalogId;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof ProductsDTO)) {
-            return false;
-        }
-
-        ProductsDTO productsDTO = (ProductsDTO) o;
-        if (this.id == null) {
-            return false;
-        }
-        return Objects.equals(this.id, productsDTO.id);
+    public BigDecimal getPrice() {
+        return price;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(this.id);
+    public void setPrice(BigDecimal price) {
+        this.price = price;
     }
 
-    // prettier-ignore
-    @Override
-    public String toString() {
-        return "ProductsDTO{" +
-            "id=" + getId() +
-            ", code='" + getCode() + "'" +
-            ", name='" + getName() + "'" +
-            ", createDate='" + getCreateDate() + "'" +
-            ", createBy='" + getCreateBy() + "'" +
-            ", lastModifiedDate='" + getLastModifiedDate() + "'" +
-            ", lastModifiedBy='" + getLastModifiedBy() + "'" +
-            ", image='" + getImage() + "'" +
-            ", detailImages='" + getDetailImages() + "'" +
-            ", brand='" + getBrand() + "'" +
-            ", productDetails='" + getProductDetails() + "'" +
-            ", descriptionDocument='" + getDescriptionDocument() + "'" +
-            ", video='" + getVideo() + "'" +
-            ", catalogId=" + getCatalogId() +
-            "}";
+    public List<ProductSpecsDTO> getSpecsDTOList() {
+        return specsDTOList;
+    }
+
+    public void setSpecsDTOList(List<ProductSpecsDTO> specsDTOList) {
+        this.specsDTOList = specsDTOList;
     }
 }

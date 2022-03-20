@@ -55,9 +55,20 @@ public class Products implements Serializable {
     private String video;
 
     @Column(name = "catalog_id")
-    private Integer catalogId;
+    private Long catalogId;
+
+    @Column(name = "status")
+    private Boolean status;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
+
+    public Boolean getStatus() {
+        return status;
+    }
+
+    public void setStatus(Boolean status) {
+        this.status = status;
+    }
 
     public Long getId() {
         return this.id;
@@ -228,16 +239,16 @@ public class Products implements Serializable {
         this.video = video;
     }
 
-    public Integer getCatalogId() {
+    public Long getCatalogId() {
         return this.catalogId;
     }
 
-    public Products catalogId(Integer catalogId) {
+    public Products catalogId(Long catalogId) {
         this.setCatalogId(catalogId);
         return this;
     }
 
-    public void setCatalogId(Integer catalogId) {
+    public void setCatalogId(Long catalogId) {
         this.catalogId = catalogId;
     }
 

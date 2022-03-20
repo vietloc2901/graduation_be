@@ -30,10 +30,10 @@ public class Catalogs implements Serializable {
     @Column(name = "parent_id")
     private Long parentId;
 
-    @Column(name = "create_date")
+    @Column(name = "create_date", updatable = false)
     private ZonedDateTime createDate;
 
-    @Column(name = "create_by")
+    @Column(name = "create_by", updatable = false)
     private String createBy;
 
     @Column(name = "last_modified_date")

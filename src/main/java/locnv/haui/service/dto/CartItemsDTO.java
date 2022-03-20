@@ -19,6 +19,26 @@ public class CartItemsDTO implements Serializable {
 
     private BigDecimal price;
 
+    private String productImage;
+
+    private String productName;
+
+    public String getProductImage() {
+        return productImage;
+    }
+
+    public void setProductImage(String productImage) {
+        this.productImage = productImage;
+    }
+
+    public String getProductName() {
+        return productName;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
+    }
+
     public Long getId() {
         return id;
     }

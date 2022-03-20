@@ -1,9 +1,12 @@
 package locnv.haui.service;
 
+import java.util.List;
 import java.util.Optional;
-import locnv.haui.service.dto.ProductsDTO;
+
+import locnv.haui.service.dto.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * Service Interface for managing {@link locnv.haui.domain.Products}.
@@ -47,4 +50,18 @@ public interface ProductsService {
      * @param id the id of the entity.
      */
     void delete(Long id);
+
+    DataDTO<ProductFullDataDTO> search(ProductsDTO productsDTO, int page, int pageSize);
+
+    DataDTO<ProductFullDataDTO> searchForViewPage(ProductsDTO productsDTO, int page, int pageSize);
+
+    DataDTO<ProductFullDataDTO> searchForView(ProductsDTO productsDTO);
+
+    ServiceResult  create(MultipartFile image, ProductsDTO productsDTO, List<ProductSpecsDTO> spec);
+
+    ServiceResult  update(MultipartFile image, ProductsDTO productsDTO, List<ProductSpecsDTO> spec);
+
+    ServiceResult searchProduct(Long id);
+
+    DataDTO<ProductFullDataDTO> searchByCatalogNoChild();
 }

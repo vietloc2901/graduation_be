@@ -1,27 +1,30 @@
 package locnv.haui.web.rest;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import locnv.haui.domain.User;
 import locnv.haui.repository.CatalogsRepository;
 import locnv.haui.service.CatalogsService;
+import locnv.haui.service.UserService;
 import locnv.haui.service.dto.CatalogsDTO;
 import locnv.haui.web.rest.errors.BadRequestAlertException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import tech.jhipster.web.util.HeaderUtil;
 import tech.jhipster.web.util.PaginationUtil;
 import tech.jhipster.web.util.ResponseUtil;
+
+import java.net.URISyntaxException;
+import java.time.ZonedDateTime;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * REST controller for managing {@link locnv.haui.domain.Catalogs}.
@@ -41,9 +44,13 @@ public class CatalogsResource {
 
     private final CatalogsRepository catalogsRepository;
 
-    public CatalogsResource(CatalogsService catalogsService, CatalogsRepository catalogsRepository) {
+    @Autowired
+    private final UserService userService;
+
+    public CatalogsResource(CatalogsService catalogsService, CatalogsRepository catalogsRepository, UserService userService) {
         this.catalogsService = catalogsService;
         this.catalogsRepository = catalogsRepository;
+        this.userService = userService;
     }
 
     /**
@@ -53,17 +60,20 @@ public class CatalogsResource {
      * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new catalogsDTO, or with status {@code 400 (Bad Request)} if the catalogs has already an ID.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PostMapping("/catalogs")
-    public ResponseEntity<CatalogsDTO> createCatalogs(@RequestBody CatalogsDTO catalogsDTO) throws URISyntaxException {
+    @PostMapping("/management/catalogs")
+    public ResponseEntity<?> createCatalogs(@RequestBody CatalogsDTO catalogsDTO) throws URISyntaxException {
         log.debug("REST request to save Catalogs : {}", catalogsDTO);
         if (catalogsDTO.getId() != null) {
             throw new BadRequestAlertException("A new catalogs cannot already have an ID", ENTITY_NAME, "idexists");
         }
-        CatalogsDTO result = catalogsService.save(catalogsDTO);
-        return ResponseEntity
-            .created(new URI("/api/catalogs/" + result.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
-            .body(result);
+        Optional<User> user = userService.getUserWithAuthorities();
+        if(user.isPresent()){
+            catalogsDTO.setCreateBy(user.get().getLogin());
+            catalogsDTO.setCreateDate(ZonedDateTime.now());
+            catalogsDTO.setLastModifiedBy(user.get().getLogin());
+            catalogsDTO.setLastModifiedDate(ZonedDateTime.now());
+        }
+        return ResponseEntity.ok(catalogsService.create(catalogsDTO));
     }
 
     /**
@@ -74,13 +84,12 @@ public class CatalogsResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated catalogsDTO,
      * or with status {@code 400 (Bad Request)} if the catalogsDTO is not valid,
      * or with status {@code 500 (Internal Server Error)} if the catalogsDTO couldn't be updated.
-     * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PutMapping("/catalogs/{id}")
     public ResponseEntity<CatalogsDTO> updateCatalogs(
         @PathVariable(value = "id", required = false) final Long id,
         @RequestBody CatalogsDTO catalogsDTO
-    ) throws URISyntaxException {
+    ) {
         log.debug("REST request to update Catalogs : {}, {}", id, catalogsDTO);
         if (catalogsDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
@@ -100,6 +109,20 @@ public class CatalogsResource {
             .body(result);
     }
 
+
+    @PostMapping("/management/catalogs/update")
+    public ResponseEntity<?> updateCatalogs(@RequestBody CatalogsDTO catalogsDTO){
+        if (catalogsDTO.getId() == null) {
+            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+        }
+        Optional<User> user = userService.getUserWithAuthorities();
+        if(user.isPresent()){
+            catalogsDTO.setLastModifiedDate(ZonedDateTime.now());
+            catalogsDTO.setLastModifiedBy(user.get().getLogin());
+        }
+        return ResponseEntity.ok(catalogsService.update(catalogsDTO));
+    }
+
     /**
      * {@code PATCH  /catalogs/:id} : Partial updates given fields of an existing catalogs, field will ignore if it is null
      *
@@ -109,13 +132,12 @@ public class CatalogsResource {
      * or with status {@code 400 (Bad Request)} if the catalogsDTO is not valid,
      * or with status {@code 404 (Not Found)} if the catalogsDTO is not found,
      * or with status {@code 500 (Internal Server Error)} if the catalogsDTO couldn't be updated.
-     * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PatchMapping(value = "/catalogs/{id}", consumes = { "application/json", "application/merge-patch+json" })
     public ResponseEntity<CatalogsDTO> partialUpdateCatalogs(
         @PathVariable(value = "id", required = false) final Long id,
         @RequestBody CatalogsDTO catalogsDTO
-    ) throws URISyntaxException {
+    ) {
         log.debug("REST request to partial update Catalogs partially : {}, {}", id, catalogsDTO);
         if (catalogsDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
@@ -166,16 +188,24 @@ public class CatalogsResource {
     /**
      * {@code DELETE  /catalogs/:id} : delete the "id" catalogs.
      *
-     * @param id the id of the catalogsDTO to delete.
+     * @param catalogsDTO is the catalogsDTO to delete.
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
-    @DeleteMapping("/catalogs/{id}")
-    public ResponseEntity<Void> deleteCatalogs(@PathVariable Long id) {
-        log.debug("REST request to delete Catalogs : {}", id);
-        catalogsService.delete(id);
-        return ResponseEntity
-            .noContent()
-            .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
-            .build();
+    @PostMapping("/management/catalogs/delete")
+    public ResponseEntity<?> deleteCatalogs(@RequestBody CatalogsDTO catalogsDTO) {
+        log.debug("REST request to delete Catalogs : {}", catalogsDTO.getName());
+        return ResponseEntity.ok(catalogsService.delete(catalogsDTO.getId()));
+    }
+
+    @PostMapping("/catalogs/searchForTree")
+    public  ResponseEntity<List<CatalogsDTO>> getCatalogsForTree(@RequestBody CatalogsDTO catalogsDTO){
+        List<CatalogsDTO> rs;
+        rs = catalogsService.getCatalogsForTree(catalogsDTO);
+        return ResponseEntity.ok(rs);
+    }
+
+    @PostMapping("/management/catalogs/checkExist")
+    public ResponseEntity<?> checkExistDocumentary(@RequestBody CatalogsDTO catalogsDTO){
+        return ResponseEntity.ok().body(catalogsService.checkExist(catalogsDTO.getCode()));
     }
 }
