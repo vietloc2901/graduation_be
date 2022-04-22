@@ -1,13 +1,10 @@
 package locnv.haui.web.rest;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 import locnv.haui.repository.OrdersRepository;
 import locnv.haui.service.OrdersService;
+import locnv.haui.service.dto.DataDTO;
 import locnv.haui.service.dto.OrdersDTO;
+import locnv.haui.service.dto.ServiceResult;
 import locnv.haui.web.rest.errors.BadRequestAlertException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,13 +12,18 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import tech.jhipster.web.util.HeaderUtil;
 import tech.jhipster.web.util.PaginationUtil;
 import tech.jhipster.web.util.ResponseUtil;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * REST controller for managing {@link locnv.haui.domain.Orders}.
@@ -177,5 +179,21 @@ public class OrdersResource {
             .noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
             .build();
+    }
+
+    @PostMapping("/orders/create")
+    public ResponseEntity<?> createNewcảOrders(@RequestBody OrdersDTO ordersDTO){
+        ServiceResult rs = ordersService.create(ordersDTO);
+
+        return ResponseEntity.ok(rs);
+    }
+
+    @PostMapping("/orders/search")
+    public ResponseEntity<?> search(@RequestBody OrdersDTO ordersDTO,
+                                   @RequestParam(value = "page", defaultValue = "1") int page,
+                                   @RequestParam(value = "pageSize", defaultValue = "10") int pageSize){
+        DataDTO rs = ordersService.search(ordersDTO, page, pageSize);
+
+        return ResponseEntity.ok(rs);
     }
 }

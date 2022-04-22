@@ -8,6 +8,7 @@ import java.util.Optional;
 import locnv.haui.repository.CartItemsRepository;
 import locnv.haui.service.CartItemsService;
 import locnv.haui.service.dto.CartItemsDTO;
+import locnv.haui.service.dto.ServiceResult;
 import locnv.haui.web.rest.errors.BadRequestAlertException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -177,5 +178,12 @@ public class CartItemsResource {
             .noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
             .build();
+    }
+
+    @PostMapping("/cart-items/create")
+    public  ResponseEntity<?> addToCart(@RequestBody CartItemsDTO cartItemsDTO){
+        ServiceResult rs = cartItemsService.create(cartItemsDTO);
+
+        return ResponseEntity.ok(rs);
     }
 }

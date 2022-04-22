@@ -2,6 +2,7 @@ package locnv.haui.service;
 
 import java.util.Optional;
 import locnv.haui.service.dto.CartItemsDTO;
+import locnv.haui.service.dto.ServiceResult;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -47,4 +48,6 @@ public interface CartItemsService {
      * @param id the id of the entity.
      */
     void delete(Long id);
+
+    ServiceResult create(CartItemsDTO cartItemsDTO);
 }
