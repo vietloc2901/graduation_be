@@ -9,6 +9,6 @@ import java.util.List;
 public interface OrdersCustomRepository {
     List<OrdersDTO> search(OrdersDTO ordersDTO, int page, int pageSize);
     BigInteger totalRecord(OrdersDTO ordersDTO);
-
     List<OrderItemsDTO> getByOrderId(Long id);
+
 }

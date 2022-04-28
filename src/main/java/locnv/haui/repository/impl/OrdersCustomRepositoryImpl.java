@@ -34,7 +34,7 @@ public class OrdersCustomRepositoryImpl implements OrdersCustomRepository {
         if(Objects.nonNull(ordersDTO.getCreateDateString())){
             sql.append(" and o.create_date like :createDate ");
         }
-        if(Objects.nonNull(ordersDTO.getId())){
+        if(Objects.nonNull(ordersDTO.getId())) {
             sql.append(" and o.id = :id ");
         }
         sql.append(" group by o.id order by o.create_date  ");
