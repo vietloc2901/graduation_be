@@ -8,7 +8,7 @@ import java.util.Objects;
 /**
  * A DTO for the {@link locnv.haui.domain.Catalogs} entity.
  */
-public class CatalogsDTO implements Serializable {
+public class CatalogsDTO extends ExportDTO implements Serializable {
 
     private Long id;
 
@@ -28,7 +28,97 @@ public class CatalogsDTO implements Serializable {
 
     private String lastModifiedBy;
 
+    private String parentCode;
+
+    private String parentName;
+
+    private String createDateString;
+
+    private String lastModifiedDateString;
+
+    private String filePathError;
+
+    private transient List<ExcelDynamicDTO> listError;
+
+    private List<Integer> lineSuccess;
+
+    private Long totalSuccess;
+
+    private Long totalFail;
+
+    public Long getTotalSuccess() {
+        return totalSuccess;
+    }
+
+    public void setTotalSuccess(Long totalSuccess) {
+        this.totalSuccess = totalSuccess;
+    }
+
+    public Long getTotalFail() {
+        return totalFail;
+    }
+
+    public void setTotalFail(Long totalFail) {
+        this.totalFail = totalFail;
+    }
+
+    public String getFilePathError() {
+        return filePathError;
+    }
+
+    public void setFilePathError(String filePathError) {
+        this.filePathError = filePathError;
+    }
+
+    public List<ExcelDynamicDTO> getListError() {
+        return listError;
+    }
+
+    public void setListError(List<ExcelDynamicDTO> listError) {
+        this.listError = listError;
+    }
+
+    public List<Integer> getLineSuccess() {
+        return lineSuccess;
+    }
+
+    public void setLineSuccess(List<Integer> lineSuccess) {
+        this.lineSuccess = lineSuccess;
+    }
+
+    public String getCreateDateString() {
+        return createDateString;
+    }
+
+    public void setCreateDateString(String createDateString) {
+        this.createDateString = createDateString;
+    }
+
+    public String getLastModifiedDateString() {
+        return lastModifiedDateString;
+    }
+
+    public void setLastModifiedDateString(String lastModifiedDateString) {
+        this.lastModifiedDateString = lastModifiedDateString;
+    }
+
+    public String getParentName() {
+        return parentName;
+    }
+
+    public void setParentName(String parentName) {
+        this.parentName = parentName;
+    }
+
     private List<CatalogsDTO> children;
+
+    public String getParentCode() {
+        return parentCode;
+    }
+
+    public void setParentCode(String parentCode) {
+        this.parentCode = parentCode;
+    }
 
     public List<CatalogsDTO> getChildren() {
         return children;
@@ -129,6 +219,18 @@ public class CatalogsDTO implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(this.id);
+    }
+
+    public CatalogsDTO(){
+
+    }
+
+    public CatalogsDTO(Integer recordNo, String code, String name, Integer sortOrder, String parentCode){
+        this.setRecordNo(recordNo);
+        this.code = code;
+        this.name = name;
+        this.parentCode = parentCode;
+        this.sortOrder = sortOrder;
     }
 
     // prettier-ignore

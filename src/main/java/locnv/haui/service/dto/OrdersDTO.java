@@ -1,7 +1,9 @@
 package locnv.haui.service.dto;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -38,6 +40,36 @@ public class OrdersDTO implements Serializable {
     private ZonedDateTime lastModifiedDate;
 
     private String lastModifiedBy;
+
+    private List<OrderItemsDTO> listItem;
+
+    private BigDecimal sumPrice;
+
+    private String createDateString;
+
+    public String getCreateDateString() {
+        return createDateString;
+    }
+
+    public void setCreateDateString(String createDateString) {
+        this.createDateString = createDateString;
+    }
+
+    public List<OrderItemsDTO> getListItem() {
+        return listItem;
+    }
+
+    public BigDecimal getSumPrice() {
+        return sumPrice;
+    }
+
+    public void setSumPrice(BigDecimal sumPrice) {
+        this.sumPrice = sumPrice;
+    }
+
+    public void setListItem(List<OrderItemsDTO> listItem) {
+        this.listItem = listItem;
+    }
 
     public Long getId() {
         return id;

@@ -14,4 +14,6 @@ public interface ProductsCustomRepository {
 
     List<ProductFullDataDTO> searchForViewProduct(ProductsDTO productsDTO, int page, int pageSize);
     BigInteger totalRecordSearchForView(ProductsDTO productsDTO);
+
+    List<ProductFullDataDTO> getDataExport(ProductsDTO productsDTO);
 }

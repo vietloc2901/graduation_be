@@ -64,4 +64,6 @@ public interface ProductsService {
     ServiceResult searchProduct(Long id);
 
     DataDTO<ProductFullDataDTO> searchByCatalogNoChild();
+
+    List<ProductFullDataDTO> getDataExport(ProductsDTO productsDTO);
 }

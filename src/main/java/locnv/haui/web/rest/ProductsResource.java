@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import locnv.haui.commons.ExportUtils;
+import locnv.haui.commons.Translator;
 import locnv.haui.domain.User;
 import locnv.haui.repository.ProductsRepository;
 import locnv.haui.service.ProductsService;
@@ -14,9 +16,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,9 +29,12 @@ import tech.jhipster.web.util.HeaderUtil;
 import tech.jhipster.web.util.PaginationUtil;
 import tech.jhipster.web.util.ResponseUtil;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -50,12 +57,15 @@ public class ProductsResource {
 
     private final ProductsRepository productsRepository;
 
+    private final ExportUtils exportUtils;
+
     @Autowired
     private final UserService userService;
 
-    public ProductsResource(ProductsService productsService, ProductsRepository productsRepository, UserService userService) {
+    public ProductsResource(ProductsService productsService, ProductsRepository productsRepository, ExportUtils exportUtils, UserService userService) {
         this.productsService = productsService;
         this.productsRepository = productsRepository;
+        this.exportUtils = exportUtils;
         this.userService = userService;
     }
 
@@ -288,5 +298,36 @@ public class ProductsResource {
         productsDTO.setPrice(price);
         ServiceResult fullDataDTO = productsService.update(image, productsDTO, specs);
         return ResponseEntity.ok(fullDataDTO);
+    }
+
+    @PostMapping("/products/exportExcel")
+    public ResponseEntity<?> exportExcel(@RequestBody ProductsDTO productsDTO) throws NullPointerException, IllegalArgumentException,
+        IOException, IllegalAccessException {
+        List<ProductFullDataDTO> listExport = productsService.getDataExport(productsDTO);
+        List<ExcelColumn> listColumn = buildColumnExport();
+        String title = Translator.toLocale("product.title.export");
+        ExcelTitle excelTitle = new ExcelTitle(title,title,"");
+        ByteArrayInputStream byteArrayInputStream = exportUtils.onExport(listColumn, listExport, 3, 0, excelTitle, true);
+        InputStreamResource resource = new InputStreamResource(byteArrayInputStream);
+        return ResponseEntity.ok()
+            .contentLength(byteArrayInputStream.available())
+            .contentType(MediaType.parseMediaType("application/octet-stream"))
+            .body(resource);
+    }
+
+    private List<ExcelColumn> buildColumnExport() {
+        List<ExcelColumn> listColumn = new ArrayList<>();
+        listColumn.add(new ExcelColumn("id", Translator.toLocale("product.excelTitle.id"), ExcelColumn.ALIGN_MENT.LEFT));
+        listColumn.add(new ExcelColumn("code", Translator.toLocale("product.excelTitle.code"), ExcelColumn.ALIGN_MENT.LEFT));
+        listColumn.add(new ExcelColumn("name", Translator.toLocale("product.excelTitle.name"), ExcelColumn.ALIGN_MENT.LEFT));
+        listColumn.add(new ExcelColumn("brand", Translator.toLocale("product.excelTitle.brand"), ExcelColumn.ALIGN_MENT.LEFT));
+        listColumn.add(new ExcelColumn("price", Translator.toLocale("product.excelTitle.price"), ExcelColumn.ALIGN_MENT.LEFT));
+        listColumn.add(new ExcelColumn("image", Translator.toLocale("product.excelTitle.image"), ExcelColumn.ALIGN_MENT.LEFT));
+        listColumn.add(new ExcelColumn("catalogName", Translator.toLocale("product.excelTitle.catalogName"), ExcelColumn.ALIGN_MENT.LEFT));
+        listColumn.add(new ExcelColumn("createDateString", Translator.toLocale("product.excelTitle.createDate"), ExcelColumn.ALIGN_MENT.LEFT));
+        listColumn.add(new ExcelColumn("createBy", Translator.toLocale("product.excelTitle.createBy"), ExcelColumn.ALIGN_MENT.LEFT));
+        listColumn.add(new ExcelColumn("lastModifiedDateString", Translator.toLocale("product.excelTitle.modifiedDate"), ExcelColumn.ALIGN_MENT.LEFT));
+        listColumn.add(new ExcelColumn("lastModifiedBy", Translator.toLocale("product.excelTitle.modifiedBy"), ExcelColumn.ALIGN_MENT.LEFT));
+        return listColumn;
     }
 }

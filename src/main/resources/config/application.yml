@@ -190,3 +190,11 @@ jhipster:
 # ===================================================================
 
 # application:
+
+import-file:
+  folder: 'C:\'
+  subFolder: SAVE
+  sample-file: 'src/main/resources/templates/'
+  sample-file-subject: 'D:\MIGI\Lao_Edu\BackEnd\laosedu_backend\src\main\resources\templates\'
+  sample-file-student: 'D:\MIGI\Lao_Edu\BackEnd\laosedu_backend\src\main\resources\templates\'
+  sample-file-teacher-rating: 'src/main/resources/templates/'

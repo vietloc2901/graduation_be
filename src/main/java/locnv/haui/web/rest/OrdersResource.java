@@ -7,7 +7,9 @@ import java.util.Objects;
 import java.util.Optional;
 import locnv.haui.repository.OrdersRepository;
 import locnv.haui.service.OrdersService;
+import locnv.haui.service.dto.DataDTO;
 import locnv.haui.service.dto.OrdersDTO;
+import locnv.haui.service.dto.ServiceResult;
 import locnv.haui.web.rest.errors.BadRequestAlertException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -178,4 +180,36 @@ public class OrdersResource {
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
             .build();
     }
+
+    @PostMapping("/orders/create")
+    public ResponseEntity<?> createNewcảOrders(@RequestBody OrdersDTO ordersDTO){
+        ServiceResult rs = ordersService.create(ordersDTO);
+
+        return ResponseEntity.ok(rs);
+    }
+
+    @PostMapping("/orders/search")
+    public ResponseEntity<?> search(@RequestBody OrdersDTO ordersDTO,
+                                    @RequestParam(value = "page", defaultValue = "1") int page,
+                                    @RequestParam(value = "pageSize", defaultValue = "10") int pageSize){
+        DataDTO rs = ordersService.search(ordersDTO, page, pageSize);
+
+        return ResponseEntity.ok(rs);
+    }
+
+    @PostMapping("/orders/getById")
+    public ResponseEntity<?> getById(@RequestBody OrdersDTO ordersDTO){
+        if(Objects.isNull(ordersDTO.getId())){
+            return null;
+        }else{
+            return ResponseEntity.ok(ordersService.findById(ordersDTO));
+        }
+    }
+
+    @PostMapping("/orders/getChangeStatus")
+    public ResponseEntity<?> changeOrderStatus(@RequestBody OrdersDTO ordersDTO){
+        ServiceResult<OrdersDTO> rs = ordersService.changeStatus(ordersDTO);
+        return ResponseEntity.ok(rs);
+    }
+
 }

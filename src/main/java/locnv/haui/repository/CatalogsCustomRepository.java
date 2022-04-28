@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface CatalogsCustomRepository {
     List<CatalogsDTO> getCatalogsForTree(CatalogsDTO catalogsDTO);
+
+    List<CatalogsDTO> getDataExport(CatalogsDTO catalogsDTO);
 }

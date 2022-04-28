@@ -43,6 +43,26 @@ public class ProductFullDataDTO {
 
     private String catalogName;
 
+    private String createDateString;
+
+    private String lastModifiedDateString;
+
+    public String getCreateDateString() {
+        return createDateString;
+    }
+
+    public void setCreateDateString(String createDateString) {
+        this.createDateString = createDateString;
+    }
+
+    public String getLastModifiedDateString() {
+        return lastModifiedDateString;
+    }
+
+    public void setLastModifiedDateString(String lastModifiedDateString) {
+        this.lastModifiedDateString = lastModifiedDateString;
+    }
+
     public String getCatalogName() {
         return catalogName;
     }

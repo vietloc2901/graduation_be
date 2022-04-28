@@ -22,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -260,5 +261,16 @@ public class ProductsServiceImpl implements ProductsService {
         DataDTO<ProductFullDataDTO> data =new DataDTO<>();
         List<Catalogs> listNoChild = catalogsRepository.findAllByParentId(null);
         return data;
+    }
+
+    @Override
+    public List<ProductFullDataDTO> getDataExport(ProductsDTO productsDTO) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy - hh:mm");
+        List<ProductFullDataDTO> ls = productsCustomRepository.getDataExport(productsDTO);
+        for(ProductFullDataDTO a : ls){
+            a.setCreateDateString(formatter.format(a.getCreateDate()));
+            a.setLastModifiedDateString(formatter.format(a.getLastModifiedDate()));
+        }
+        return ls;
     }
 }

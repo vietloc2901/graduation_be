@@ -259,6 +259,71 @@ public class ProductsCustomRepositoryImpl implements ProductsCustomRepository {
         return (BigInteger) query.uniqueResult();
     }
 
+    @Override
+    public List<ProductFullDataDTO> getDataExport(ProductsDTO productsDTO) {
+        StringBuilder sql = new StringBuilder("SELECT c.name catalogName, p.id, p.code, p.name, p.create_date createDate, p.create_by createBy, ");
+        sql.append("p.last_modified_date lastModifiedDate, p.last_modified_by lastModifiedBy, p.image, p.detail_images detailImages, ");
+        sql.append("p.brand, p.product_details productDetails, p.description_document descriptionDocument, p.video, p.catalog_id catalogId, ");
+        sql.append("p.status, pp.price FROM products p LEFT JOIN catalogs c ON p.catalog_id = c.id LEFT JOIN ");
+        sql.append(("(SELECT r1.product_id , r1.price, r1.apply_date FROM product_prices r1 RIGHT JOIN "));
+        sql.append(" (SELECT id, product_id, max(apply_date) apply_date FROM product_prices GROUP BY product_id) as r2 ON ");
+        sql.append("r1.product_id = r2.product_id GROUP BY r1.product_id) as pp ON p.id = pp.product_id where true ");
+        if(Objects.nonNull(productsDTO.getId())){
+            sql.append(" and p.id =:id ");
+        }
+        if(Objects.nonNull(productsDTO.getCatalogId())){
+            sql.append(" and p.catalog_id =:catalogId ");
+        }
+        if(StringUtils.isNotBlank(productsDTO.getCode())){
+            sql.append(" and upper(p.code) LIKE upper(:code) escape '&' ");
+        }
+        if(StringUtils.isNotBlank(productsDTO.getName())){
+            sql.append(" and upper(p.name) LIKE upper(:name) escape '&' ");
+        }
+        if(Objects.nonNull(productsDTO.getStatus())){
+            sql.append(" and p.status =:status ");
+        }
+        sql.append(" order by p.catalog_id ,p.name, p.code ");
+
+        NativeQuery query = ((Session) entityManager.getDelegate()).createNativeQuery(sql.toString());
+
+        query
+            .addScalar("id", new LongType())
+            .addScalar("catalogName", new StringType())
+            .addScalar("code", new StringType())
+            .addScalar("name", new StringType())
+            .addScalar("createDate", new ZonedDateTimeType())
+            .addScalar("createBy", new StringType())
+            .addScalar("lastModifiedDate", new ZonedDateTimeType())
+            .addScalar("lastModifiedBy", new StringType())
+            .addScalar("image", new StringType())
+            .addScalar("detailImages", new StringType())
+            .addScalar("brand", new StringType())
+            .addScalar("productDetails", new StringType())
+            .addScalar("descriptionDocument", new StringType())
+            .addScalar("catalogId", new LongType())
+            .addScalar("status", new BooleanType())
+            .addScalar("price", new BigDecimalType())
+            .setResultTransformer(Transformers.aliasToBean(ProductFullDataDTO.class));
+        if(Objects.nonNull(productsDTO.getId())){
+            query.setParameter("id", productsDTO.getId());
+        }
+        if(Objects.nonNull(productsDTO.getCatalogId())){
+            query.setParameter("catalogId", productsDTO.getCatalogId());
+        }
+        if(StringUtils.isNotBlank(productsDTO.getCode())){
+            query.setParameter("code","%"+validateKeySearch(productsDTO.getCode()+"%"));
+        }
+        if(StringUtils.isNotBlank(productsDTO.getName())){
+            query.setParameter("name","%"+validateKeySearch(productsDTO.getName()+"%"));
+        }
+        if(Objects.nonNull(productsDTO.getStatus())){
+            query.setParameter("status", productsDTO.getStatus());
+        }
+        List<ProductFullDataDTO> resultList = query.getResultList();
+        return resultList;
+    }
+
     public static String validateKeySearch(String str){
         return str.replaceAll("&", "&&").replaceAll("_", "&_");
     }

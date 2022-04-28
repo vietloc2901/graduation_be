@@ -1,7 +1,10 @@
 package locnv.haui.service;
 
 import java.util.Optional;
+
+import locnv.haui.service.dto.DataDTO;
 import locnv.haui.service.dto.OrdersDTO;
+import locnv.haui.service.dto.ServiceResult;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -47,4 +50,12 @@ public interface OrdersService {
      * @param id the id of the entity.
      */
     void delete(Long id);
+
+    ServiceResult create(OrdersDTO ordersDTO);
+
+    DataDTO search(OrdersDTO ordersDTO, int page, int pageSize);
+
+    OrdersDTO findById(OrdersDTO ordersDTO);
+
+    ServiceResult<OrdersDTO> changeStatus(OrdersDTO ordersDTO);
 }

@@ -1,11 +1,16 @@
 package locnv.haui.service;
 
+import java.io.ByteArrayInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.List;
 import java.util.Optional;
 import locnv.haui.service.dto.CatalogsDTO;
 import locnv.haui.service.dto.ServiceResult;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * Service Interface for managing {@link locnv.haui.domain.Catalogs}.
@@ -56,7 +61,15 @@ public interface CatalogsService {
 
     List<CatalogsDTO> getCatalogsForTree(CatalogsDTO catalogsDTO);
 
+    List<CatalogsDTO> getDataExport(CatalogsDTO catalogsDTO);
+
     ServiceResult<CatalogsDTO> checkExist(String code);
 
     ServiceResult<CatalogsDTO> update(CatalogsDTO catalogsDTO);
+
+    byte[] getSampleFile() throws Exception;
+
+    List<CatalogsDTO> importFile(MultipartFile file, String fileInputPath, Integer isAddNew) throws GeneralSecurityException;
+
+    ByteArrayInputStream downloadExcelError(CatalogsDTO catalogsDTO) throws GeneralSecurityException, IOException;
 }
