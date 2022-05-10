@@ -50,6 +50,15 @@ public class AdminUserDTO {
 
     private String phone;
 
+    private String authString;
+
+    public String getAuthString() {
+        return authString;
+    }
+
+    public void setAuthString(String authString) {
+        this.authString = authString;
+    }
 
     public String getPhone() {
         return phone;
@@ -76,6 +85,7 @@ public class AdminUserDTO {
         this.createdDate = user.getCreatedDate();
         this.lastModifiedBy = user.getLastModifiedBy();
         this.lastModifiedDate = user.getLastModifiedDate();
+        this.phone = user.getPhone();
         this.authorities = user.getAuthorities().stream().map(Authority::getName).collect(Collectors.toSet());
     }
 

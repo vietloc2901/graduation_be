@@ -9,7 +9,7 @@
     <p th:text="#{email.activation.greeting(${user.login})}">Xin chào</p>
     <p th:text="#{email.activation.text1}">Tài khoản của bạn đã được tạo. Hãy bấm vào đây để kích hoạt:</p>
     <p>
-      <a th:with="url=(@{|${baseUrl}/activate?key=${user.activationKey}|})" th:href="${url}">Kích hoạt</a>
+      <a th:with="url=(@{|${baseUrl}/api/activate?key=${user.activationKey}|})" th:href="${url}">Kích hoạt</a>
     </p>
     <p>
       <span th:text="#{email.activation.text2}">Trân trọng, </span>

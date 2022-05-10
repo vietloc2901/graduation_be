@@ -2,6 +2,7 @@ package locnv.haui.service.impl;
 
 import java.math.BigInteger;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -28,6 +29,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import locnv.haui.commons.AppConstants;
 
 /**
  * Service Implementation for managing {@link Orders}.
@@ -179,5 +181,72 @@ public class OrdersServiceImpl implements OrdersService {
             return new ServiceResult<>(null, HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
         return new ServiceResult<>(ordersDTO, HttpStatus.OK, "Thành công");
+    }
+
+    @Override
+    public DataDTO getWithAuthority(OrdersDTO ordersDTO, int page, int pageSize) {
+        Optional<User> login = userService.getUserWithAuthorities();
+        DataDTO dataDTO = new DataDTO();
+        if(login.isEmpty()){
+            return dataDTO;
+        }
+        ordersDTO.setUserId(login.get().getId());
+        List<OrdersDTO> list = ordersCustomRepository.searchWithAuthority(ordersDTO, page, pageSize);
+        BigInteger total = ordersCustomRepository.totalRecordWithAuthority(ordersDTO);
+        dataDTO.setData(list);
+        dataDTO.setPage(page);
+        dataDTO.setPageSize(pageSize);
+        dataDTO.setTotal(total.intValue());
+        return dataDTO;
+    }
+
+    @Override
+    public ServiceResult cancelOrder(OrdersDTO ordersDTO) {
+        if(!ordersDTO.getStatus().equals("WAITING")){
+            return new ServiceResult(null, HttpStatus.INTERNAL_SERVER_ERROR, "Không thể hủy đơn hàng đã chuẩn bị");
+        }
+        Optional<Orders> o = ordersRepository.findById(ordersDTO.getId());
+        if(o.isEmpty()){
+            return new ServiceResult(null, HttpStatus.INTERNAL_SERVER_ERROR, "Không tồn tại đơn hàng");
+        }
+
+        Orders cancel = o.get();
+
+        cancel.setStatus("CANCEL");
+        try{
+            ordersRepository.save(cancel);
+            return new ServiceResult(cancel, HttpStatus.OK, "Thành công");
+        }catch (Exception e){
+            return new ServiceResult(null, HttpStatus.INTERNAL_SERVER_ERROR, "Lỗi hủy đơn hàng");
+        }
+    }
+
+    @Override
+    public List<OrdersDTO> getDataExport(OrdersDTO ordersDTO) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy - hh:mm");
+        List<OrdersDTO> rs = ordersCustomRepository.getDataExport(ordersDTO);
+        for (OrdersDTO o : rs){
+            o.setStatusString(formatter.format(o.getCreateDate()));
+            o.setStatusString(getStatus(o.getStatus()));
+        }
+
+        return rs;
+    }
+
+    private String getStatus(String status){
+        switch (status){
+            case AppConstants.WAITING:
+                return AppConstants.WAITINGVN;
+            case AppConstants.PREPARING:
+                return AppConstants.PREPARINGVN;
+            case AppConstants.TRANSFERING:
+                return AppConstants.TRANSFERINGVN;
+            case AppConstants.DONE:
+                return AppConstants.DONEVN;
+            case AppConstants.CANCEL:
+                return AppConstants.CANCELVN;
+            default:
+                return "";
+        }
     }
 }

@@ -47,6 +47,16 @@ public class OrdersDTO implements Serializable {
 
     private String createDateString;
 
+    private String statusString;
+
+    public String getStatusString() {
+        return statusString;
+    }
+
+    public void setStatusString(String statusString) {
+        this.statusString = statusString;
+    }
+
     public String getCreateDateString() {
         return createDateString;
     }

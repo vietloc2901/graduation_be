@@ -1,5 +1,6 @@
 package locnv.haui.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import locnv.haui.service.dto.DataDTO;
@@ -58,4 +59,10 @@ public interface OrdersService {
     OrdersDTO findById(OrdersDTO ordersDTO);
 
     ServiceResult<OrdersDTO> changeStatus(OrdersDTO ordersDTO);
+
+    DataDTO getWithAuthority(OrdersDTO ordersDTO, int page, int pageSize);
+
+    ServiceResult cancelOrder(OrdersDTO ordersDTO);
+
+    List<OrdersDTO> getDataExport(OrdersDTO ordersDTO);
 }

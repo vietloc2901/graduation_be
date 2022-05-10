@@ -13,9 +13,12 @@ import locnv.haui.security.AuthoritiesConstants;
 import locnv.haui.service.MailService;
 import locnv.haui.service.UserService;
 import locnv.haui.service.dto.AdminUserDTO;
+import locnv.haui.service.dto.DataDTO;
+import locnv.haui.service.dto.ServiceResult;
 import locnv.haui.web.rest.errors.BadRequestAlertException;
 import locnv.haui.web.rest.errors.EmailAlreadyUsedException;
 import locnv.haui.web.rest.errors.LoginAlreadyUsedException;
+import locnv.haui.web.rest.vm.ManagedUserVM;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -204,4 +207,35 @@ public class UserResource {
         userService.deleteUser(login);
         return ResponseEntity.noContent().headers(HeaderUtil.createAlert(applicationName, "userManagement.deleted", login)).build();
     }
+
+    @PostMapping("/allUser")
+    @PreAuthorize("hasAuthority(\"" + AuthoritiesConstants.ADMIN + "\")")
+    public ResponseEntity<?> getAll(@RequestBody AdminUserDTO adminUserDTO,
+                                                     @RequestParam(value = "page", defaultValue = "1") int page,
+                                                     @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
+        log.debug("REST request to get all User for an admin");
+        DataDTO a = new DataDTO();
+        List<AdminUserDTO> rs = userService.getAllUsers(adminUserDTO.getLogin(), adminUserDTO.getAuthString(), AuthoritiesConstants.ADMIN, page-1, pageSize);
+        a.setData(rs);
+        a.setTotal(userService.totalAllUser(adminUserDTO.getLogin(), adminUserDTO.getAuthString(), AuthoritiesConstants.ADMIN));
+        a.setPage(page);
+        a.setPageSize(pageSize);
+        return ResponseEntity.ok(a);
+    }
+
+    @PostMapping("/createUser")
+    @PreAuthorize("hasAuthority(\"" + AuthoritiesConstants.ADMIN + "\")")
+    public ResponseEntity<?> createUserManager(@RequestBody ManagedUserVM userVM) {
+        log.debug("REST request to create managerUser all User for an admin");
+        ServiceResult<?> rs = userService.createUser1(userVM, null);
+        return ResponseEntity.ok(rs);
+    }
+
+//    @PostMapping("/changeStatus")
+//    @PreAuthorize("hasAuthority(\"" + AuthoritiesConstants.ADMIN + "\")")
+//    public ResponseEntity<?> changeStatus(@RequestBody AdminUserDTO adminUserDTO) {
+//        log.debug("REST request to create managerUser all User for an admin");
+//        ServiceResult<?> rs = userService.createUser1(userVM, null);
+//        return ResponseEntity.ok(rs);
+//    }
 }

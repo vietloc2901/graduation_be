@@ -10,5 +10,7 @@ public interface OrdersCustomRepository {
     List<OrdersDTO> search(OrdersDTO ordersDTO, int page, int pageSize);
     BigInteger totalRecord(OrdersDTO ordersDTO);
     List<OrderItemsDTO> getByOrderId(Long id);
-
+    List<OrdersDTO> searchWithAuthority(OrdersDTO ordersDTO, int page, int pageSize);
+    BigInteger totalRecordWithAuthority(OrdersDTO ordersDTO);
+    List<OrdersDTO> getDataExport(OrdersDTO ordersDTO);
 }

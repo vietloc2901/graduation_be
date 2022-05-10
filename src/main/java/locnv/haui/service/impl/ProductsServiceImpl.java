@@ -183,7 +183,6 @@ public class ProductsServiceImpl implements ProductsService {
         if(Objects.nonNull(products)){
             rs.setBrand(products.getBrand());
             rs.setImage(products.getImage());
-            rs.setDetailImages(products.getDetailImages());
         }
         List<ProductSpecsDTO> specsDTOList = specsMapper.toDto(productSpecsRepository.findAllByProductId(rs.getId()));
         rs.setSpecsDTOList(specsDTOList);

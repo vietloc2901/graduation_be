@@ -39,9 +39,6 @@ public class Products implements Serializable {
     @Column(name = "image")
     private String image;
 
-    @Column(name = "detail_images")
-    private String detailImages;
-
     @Column(name = "brand")
     private String brand;
 
@@ -174,18 +171,6 @@ public class Products implements Serializable {
         this.image = image;
     }
 
-    public String getDetailImages() {
-        return this.detailImages;
-    }
-
-    public Products detailImages(String detailImages) {
-        this.setDetailImages(detailImages);
-        return this;
-    }
-
-    public void setDetailImages(String detailImages) {
-        this.detailImages = detailImages;
-    }
 
     public String getBrand() {
         return this.brand;
@@ -283,7 +268,6 @@ public class Products implements Serializable {
             ", lastModifiedDate='" + getLastModifiedDate() + "'" +
             ", lastModifiedBy='" + getLastModifiedBy() + "'" +
             ", image='" + getImage() + "'" +
-            ", detailImages='" + getDetailImages() + "'" +
             ", brand='" + getBrand() + "'" +
             ", productDetails='" + getProductDetails() + "'" +
             ", descriptionDocument='" + getDescriptionDocument() + "'" +

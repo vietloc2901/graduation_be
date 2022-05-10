@@ -27,7 +27,7 @@ public class ProductsCustomRepositoryImpl implements ProductsCustomRepository {
     @Override
     public List<ProductFullDataDTO> search(ProductsDTO productsDTO, int page, int pageSize) {
         StringBuilder sql = new StringBuilder("SELECT c.name catalogName, p.id, p.code, p.name, p.create_date createDate, p.create_by createBy, ");
-        sql.append("p.last_modified_date lastModifiedDate, p.last_modified_by lastModifiedBy, p.image, p.detail_images detailImages, ");
+        sql.append("p.last_modified_date lastModifiedDate, p.last_modified_by lastModifiedBy, p.image, ");
         sql.append("p.brand, p.product_details productDetails, p.description_document descriptionDocument, p.video, p.catalog_id catalogId, ");
         sql.append("p.status, pp.price FROM products p LEFT JOIN catalogs c ON p.catalog_id = c.id LEFT JOIN ");
         sql.append(("(SELECT r1.product_id , r1.price, r1.apply_date FROM product_prices r1 RIGHT JOIN "));
@@ -71,7 +71,6 @@ public class ProductsCustomRepositoryImpl implements ProductsCustomRepository {
             .addScalar("lastModifiedDate", new ZonedDateTimeType())
             .addScalar("lastModifiedBy", new StringType())
             .addScalar("image", new StringType())
-            .addScalar("detailImages", new StringType())
             .addScalar("brand", new StringType())
             .addScalar("productDetails", new StringType())
             .addScalar("descriptionDocument", new StringType())
@@ -101,7 +100,7 @@ public class ProductsCustomRepositoryImpl implements ProductsCustomRepository {
     @Override
     public List<ProductFullDataDTO> searchForViewProduct(ProductsDTO productsDTO, int page, int pageSize) {
         StringBuilder sql = new StringBuilder("SELECT c.name catalogName, p.id, p.code, p.name, p.create_date createDate, p.create_by createBy, ");
-        sql.append("p.last_modified_date lastModifiedDate, p.last_modified_by lastModifiedBy, p.image, p.detail_images detailImages, ");
+        sql.append("p.last_modified_date lastModifiedDate, p.last_modified_by lastModifiedBy, p.image, ");
         sql.append("p.brand, p.product_details productDetails, p.description_document descriptionDocument, p.video, p.catalog_id catalogId, ");
         sql.append("p.status, pp.price FROM products p LEFT JOIN catalogs c ON p.catalog_id = c.id LEFT JOIN ");
         sql.append(("(SELECT r1.product_id , r1.price, r1.apply_date FROM product_prices r1 RIGHT JOIN "));
@@ -140,7 +139,6 @@ public class ProductsCustomRepositoryImpl implements ProductsCustomRepository {
             .addScalar("lastModifiedDate", new ZonedDateTimeType())
             .addScalar("lastModifiedBy", new StringType())
             .addScalar("image", new StringType())
-            .addScalar("detailImages", new StringType())
             .addScalar("brand", new StringType())
             .addScalar("productDetails", new StringType())
             .addScalar("descriptionDocument", new StringType())
@@ -161,7 +159,7 @@ public class ProductsCustomRepositoryImpl implements ProductsCustomRepository {
     @Override
     public List<ProductFullDataDTO> searchForView(ProductsDTO productsDTO) {
         StringBuilder sql = new StringBuilder("SELECT c.name catalogName, p.id, p.code, p.name, p.create_date createDate, p.create_by createBy, ");
-        sql.append("p.last_modified_date lastModifiedDate, p.last_modified_by lastModifiedBy, p.image, p.detail_images detailImages, ");
+        sql.append("p.last_modified_date lastModifiedDate, p.last_modified_by lastModifiedBy, p.image, ");
         sql.append("p.brand, p.product_details productDetails, p.description_document descriptionDocument, p.video, p.catalog_id catalogId, ");
         sql.append("p.status, pp.price FROM products p LEFT JOIN catalogs c ON p.catalog_id = c.id LEFT JOIN ");
         sql.append(("(SELECT r1.product_id , r1.price, r1.apply_date FROM product_prices r1 RIGHT JOIN "));
@@ -190,7 +188,6 @@ public class ProductsCustomRepositoryImpl implements ProductsCustomRepository {
             .addScalar("lastModifiedDate", new ZonedDateTimeType())
             .addScalar("lastModifiedBy", new StringType())
             .addScalar("image", new StringType())
-            .addScalar("detailImages", new StringType())
             .addScalar("brand", new StringType())
             .addScalar("productDetails", new StringType())
             .addScalar("descriptionDocument", new StringType())
@@ -262,7 +259,7 @@ public class ProductsCustomRepositoryImpl implements ProductsCustomRepository {
     @Override
     public List<ProductFullDataDTO> getDataExport(ProductsDTO productsDTO) {
         StringBuilder sql = new StringBuilder("SELECT c.name catalogName, p.id, p.code, p.name, p.create_date createDate, p.create_by createBy, ");
-        sql.append("p.last_modified_date lastModifiedDate, p.last_modified_by lastModifiedBy, p.image, p.detail_images detailImages, ");
+        sql.append("p.last_modified_date lastModifiedDate, p.last_modified_by lastModifiedBy, p.image, ");
         sql.append("p.brand, p.product_details productDetails, p.description_document descriptionDocument, p.video, p.catalog_id catalogId, ");
         sql.append("p.status, pp.price FROM products p LEFT JOIN catalogs c ON p.catalog_id = c.id LEFT JOIN ");
         sql.append(("(SELECT r1.product_id , r1.price, r1.apply_date FROM product_prices r1 RIGHT JOIN "));
@@ -297,7 +294,6 @@ public class ProductsCustomRepositoryImpl implements ProductsCustomRepository {
             .addScalar("lastModifiedDate", new ZonedDateTimeType())
             .addScalar("lastModifiedBy", new StringType())
             .addScalar("image", new StringType())
-            .addScalar("detailImages", new StringType())
             .addScalar("brand", new StringType())
             .addScalar("productDetails", new StringType())
             .addScalar("descriptionDocument", new StringType())

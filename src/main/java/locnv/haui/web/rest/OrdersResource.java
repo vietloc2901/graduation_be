@@ -1,17 +1,19 @@
 package locnv.haui.web.rest;
 
+import locnv.haui.commons.ExportUtils;
+import locnv.haui.commons.Translator;
 import locnv.haui.repository.OrdersRepository;
 import locnv.haui.service.OrdersService;
-import locnv.haui.service.dto.DataDTO;
-import locnv.haui.service.dto.OrdersDTO;
-import locnv.haui.service.dto.ServiceResult;
+import locnv.haui.service.dto.*;
 import locnv.haui.web.rest.errors.BadRequestAlertException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -19,8 +21,11 @@ import tech.jhipster.web.util.HeaderUtil;
 import tech.jhipster.web.util.PaginationUtil;
 import tech.jhipster.web.util.ResponseUtil;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -43,9 +48,12 @@ public class OrdersResource {
 
     private final OrdersRepository ordersRepository;
 
-    public OrdersResource(OrdersService ordersService, OrdersRepository ordersRepository) {
+    private final ExportUtils exportUtils;
+
+    public OrdersResource(OrdersService ordersService, OrdersRepository ordersRepository, ExportUtils exportUtils) {
         this.ordersService = ordersService;
         this.ordersRepository = ordersRepository;
+        this.exportUtils = exportUtils;
     }
 
     /**
@@ -210,5 +218,49 @@ public class OrdersResource {
     public ResponseEntity<?> changeOrderStatus(@RequestBody OrdersDTO ordersDTO){
         ServiceResult<OrdersDTO> rs = ordersService.changeStatus(ordersDTO);
         return ResponseEntity.ok(rs);
+    }
+
+    @PostMapping("/orders/getWithAuthority")
+    public ResponseEntity<?> getWithAuthority(@RequestBody OrdersDTO ordersDTO,
+                                    @RequestParam(value = "page", defaultValue = "1") int page,
+                                    @RequestParam(value = "pageSize", defaultValue = "10") int pageSize){
+        DataDTO rs = ordersService.getWithAuthority(ordersDTO, page, pageSize);
+
+        return ResponseEntity.ok(rs);
+    }
+
+    @PostMapping("/orders/cancelOrder")
+    public ResponseEntity<?> cancelOrder(@RequestBody OrdersDTO ordersDTO){
+        return ResponseEntity.ok(ordersService.cancelOrder(ordersDTO));
+    }
+
+    @PostMapping("/orders/exportExcel")
+    public ResponseEntity<?> exportExcel(@RequestBody OrdersDTO ordersDTO) throws IOException, IllegalAccessException {
+        List<OrdersDTO> listExport = ordersService.getDataExport(ordersDTO);
+        List<ExcelColumn> listColumn = buildColumnExport();
+        String title = Translator.toLocale("order.title.export");
+        ExcelTitle excelTitle = new ExcelTitle(title,title,"");
+        ByteArrayInputStream byteArrayInputStream = exportUtils.onExport(listColumn, listExport, 3, 0, excelTitle, true);
+        InputStreamResource resource = new InputStreamResource(byteArrayInputStream);
+        return ResponseEntity.ok()
+            .contentLength(byteArrayInputStream.available())
+            .contentType(MediaType.parseMediaType("application/octet-stream"))
+            .body(resource);
+    }
+
+    private List<ExcelColumn> buildColumnExport() {
+        List<ExcelColumn> listColumn = new ArrayList<>();
+        listColumn.add(new ExcelColumn("id", Translator.toLocale("order.excelTitle.id"), ExcelColumn.ALIGN_MENT.LEFT));
+        listColumn.add(new ExcelColumn("name", Translator.toLocale("order.excelTitle.name"), ExcelColumn.ALIGN_MENT.LEFT));
+        listColumn.add(new ExcelColumn("receiverName", Translator.toLocale("order.excelTitle.receiverName"), ExcelColumn.ALIGN_MENT.LEFT));
+        listColumn.add(new ExcelColumn("phone", Translator.toLocale("order.excelTitle.phone"), ExcelColumn.ALIGN_MENT.LEFT));
+        listColumn.add(new ExcelColumn("receiverPhone", Translator.toLocale("order.excelTitle.receiverPhone"), ExcelColumn.ALIGN_MENT.LEFT));
+        listColumn.add(new ExcelColumn("email", Translator.toLocale("order.excelTitle.email"), ExcelColumn.ALIGN_MENT.LEFT));
+        listColumn.add(new ExcelColumn("address", Translator.toLocale("order.excelTitle.address"), ExcelColumn.ALIGN_MENT.LEFT));
+        listColumn.add(new ExcelColumn("createDateString", Translator.toLocale("order.excelTitle.createDate"), ExcelColumn.ALIGN_MENT.LEFT));
+        listColumn.add(new ExcelColumn("createBy", Translator.toLocale("order.excelTitle.createBy"), ExcelColumn.ALIGN_MENT.LEFT));
+        listColumn.add(new ExcelColumn("statusString", Translator.toLocale("order.excelTitle.status"), ExcelColumn.ALIGN_MENT.LEFT));
+        listColumn.add(new ExcelColumn("sumPrice", Translator.toLocale("order.excelTitle.sumPrice"), ExcelColumn.ALIGN_MENT.LEFT));
+        return listColumn;
     }
 }

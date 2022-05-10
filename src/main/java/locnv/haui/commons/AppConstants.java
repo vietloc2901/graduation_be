@@ -59,6 +59,21 @@ public class AppConstants {
     public static final String CHAR_DATE = "^(0?[1-9]|[12][0-9]|3[01])[\\/\\-](0?[1-9]|1[012])[\\/\\-]\\d{4}$";
     public static final String REGEX_EMAIL_2 = "[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$";
 
+    //Status for order
+
+    public static final String WAITING = "WAITING";
+    public static final String PREPARING = "PREPARING";
+    public static final String TRANSFERING = "TRANSFERING";
+    public static final String DONE = "DONE";
+    public static final String CANCEL = "CANCEL";
+
+    public static final String WAITINGVN = "Đang chờ";
+    public static final String PREPARINGVN = "Đang chuẩn bị";
+    public static final String TRANSFERINGVN = "Đang giao";
+    public static final String DONEVN = "Hoàn thành";
+    public static final String CANCELVN = "Hủy";
+
+
     public class DateFormat {
 
         public static final String YYYY_MM = "yyyy/MM";

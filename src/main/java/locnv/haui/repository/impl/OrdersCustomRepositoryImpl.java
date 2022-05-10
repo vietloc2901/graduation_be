@@ -122,4 +122,134 @@ public class OrdersCustomRepositoryImpl implements OrdersCustomRepository {
         }
         return (BigInteger) query.uniqueResult();
     }
+
+    @Override
+    public BigInteger totalRecordWithAuthority(OrdersDTO ordersDTO) {
+        StringBuilder sql = new StringBuilder("SELECT count(*) from orders o where true ");
+        if(Objects.nonNull(ordersDTO.getStatus())){
+            sql.append(" and o.status =:status ");
+        }
+        if(Objects.nonNull(ordersDTO.getCreateDateString())){
+            sql.append(" and o.create_date like :createDate ");
+        }
+        sql.append(" and o.user_id = :userId ");
+
+        NativeQuery query = ((Session) entityManager.getDelegate()).createNativeQuery(sql.toString());
+
+        if(Objects.nonNull(ordersDTO.getStatus())){
+            query.setParameter("status", ordersDTO.getStatus());
+        }
+        if(Objects.nonNull(ordersDTO.getCreateDateString())){
+            query.setParameter("createDate", "%" + ordersDTO.getCreateDateString() + "%");
+        }
+        query.setParameter("userId", ordersDTO.getUserId());
+        return (BigInteger) query.uniqueResult();
+    }
+
+    @Override
+    public List<OrdersDTO> searchWithAuthority(OrdersDTO ordersDTO, int page, int pageSize) {
+        StringBuilder sql = new StringBuilder("SELECT o.id, o.name, o.phone, o.user_id userId, o.receiver_name receiverName, o.receiver_phone receiverPhone, o.status, ");
+        sql.append("o.last_modified_date lastModifiedDate, o.last_modified_by lastModifiedBy, o.email, o.address, o.discount, o.note, o.create_date createDate, sum(oi.price * oi.quantity) as sumPrice ");
+        sql.append(" from orders o left join order_items oi on o.id = oi.order_id where true ");
+        if(Objects.nonNull(ordersDTO.getStatus())){
+            sql.append(" and o.status =:status ");
+        }
+        if(Objects.nonNull(ordersDTO.getCreateDateString())){
+            sql.append(" and o.create_date like :createDate ");
+        }
+        if(Objects.nonNull(ordersDTO.getId())) {
+            sql.append(" and o.id = :id ");
+        }
+        sql.append(" and o.user_id = :userId ");
+        sql.append(" group by o.id order by o.create_date  ");
+        if(page != 0 && pageSize != 0){
+            int offset;
+            if(page <= 1){
+                offset = 0;
+            }else{
+                offset = (page -1) *pageSize;
+            }
+            sql.append(" limit ").append(offset).append(",").append(pageSize).append(" ");
+        }
+
+        NativeQuery query = ((Session) entityManager.getDelegate()).createNativeQuery(sql.toString());
+
+        query
+            .addScalar("id", new LongType())
+            .addScalar("userId", new LongType())
+            .addScalar("name", new StringType())
+            .addScalar("phone", new StringType())
+            .addScalar("receiverName", new StringType())
+            .addScalar("receiverPhone", new StringType())
+            .addScalar("email", new StringType())
+            .addScalar("address", new StringType())
+            .addScalar("discount", new FloatType())
+            .addScalar("note", new StringType())
+            .addScalar("createDate", new ZonedDateTimeType())
+            .addScalar("sumPrice", new BigDecimalType())
+            .addScalar("lastModifiedDate", new ZonedDateTimeType())
+            .addScalar("lastModifiedBy", new StringType())
+            .addScalar("status", new StringType())
+            .setResultTransformer(Transformers.aliasToBean(OrdersDTO.class));
+        if(Objects.nonNull(ordersDTO.getStatus())){
+            query.setParameter("status", ordersDTO.getStatus());
+        }
+        if(Objects.nonNull(ordersDTO.getCreateDateString())){
+            query.setParameter("createDate", "%" + ordersDTO.getCreateDateString() + "%");
+        }
+        if(Objects.nonNull(ordersDTO.getId())){
+            query.setParameter("id", ordersDTO.getId());
+        }
+        query.setParameter("userId", ordersDTO.getUserId());
+        List<OrdersDTO> resultList = query.getResultList();
+        return resultList;
+    }
+
+    @Override
+    public List<OrdersDTO> getDataExport(OrdersDTO ordersDTO) {
+        StringBuilder sql = new StringBuilder("SELECT o.id, o.name, o.phone, o.user_id userId, o.receiver_name receiverName, o.receiver_phone receiverPhone, o.status, ");
+        sql.append("o.last_modified_date lastModifiedDate, o.last_modified_by lastModifiedBy, o.email, o.address, o.discount, o.note, o.create_date createDate, sum(oi.price * oi.quantity) as sumPrice ");
+        sql.append(" from orders o left join order_items oi on o.id = oi.order_id where true ");
+        if(Objects.nonNull(ordersDTO.getStatus())){
+            sql.append(" and o.status =:status ");
+        }
+        if(Objects.nonNull(ordersDTO.getCreateDateString())){
+            sql.append(" and o.create_date like :createDate ");
+        }
+        if(Objects.nonNull(ordersDTO.getId())) {
+            sql.append(" and o.id = :id ");
+        }
+        sql.append(" group by o.id order by o.create_date  ");
+
+        NativeQuery query = ((Session) entityManager.getDelegate()).createNativeQuery(sql.toString());
+
+        query
+            .addScalar("id", new LongType())
+            .addScalar("userId", new LongType())
+            .addScalar("name", new StringType())
+            .addScalar("phone", new StringType())
+            .addScalar("receiverName", new StringType())
+            .addScalar("receiverPhone", new StringType())
+            .addScalar("email", new StringType())
+            .addScalar("address", new StringType())
+            .addScalar("discount", new FloatType())
+            .addScalar("note", new StringType())
+            .addScalar("createDate", new ZonedDateTimeType())
+            .addScalar("sumPrice", new BigDecimalType())
+            .addScalar("lastModifiedDate", new ZonedDateTimeType())
+            .addScalar("lastModifiedBy", new StringType())
+            .addScalar("status", new StringType())
+            .setResultTransformer(Transformers.aliasToBean(OrdersDTO.class));
+        if(Objects.nonNull(ordersDTO.getStatus())){
+            query.setParameter("status", ordersDTO.getStatus());
+        }
+        if(Objects.nonNull(ordersDTO.getCreateDateString())){
+            query.setParameter("createDate", "%" + ordersDTO.getCreateDateString() + "%");
+        }
+        if(Objects.nonNull(ordersDTO.getId())){
+            query.setParameter("id", ordersDTO.getId());
+        }
+        List<OrdersDTO> resultList = query.getResultList();
+        return resultList;
+    }
 }

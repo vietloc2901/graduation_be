@@ -117,7 +117,7 @@ public class UserService {
         if (userDTO.getEmail() != null) {
             newUser.setEmail(userDTO.getEmail().toLowerCase());
         }
-        newUser.setImageUrl(userDTO.getImageUrl());
+        newUser.setImageUrl("https://locnvgraduation.s3.ap-southeast-1.amazonaws.com/150-1503945_transparent-user-png-default-user-image-png-png.png");
         newUser.setPhone(userDTO.getPhone());
         newUser.setLangKey(StringUtils.isEmpty(userDTO.getLangKey()) ? "en" : userDTO.getLangKey());
         // new user is not active
@@ -177,7 +177,7 @@ public class UserService {
 
     public ServiceResult<AdminUserDTO> createUser1(ManagedUserVM userDTO, MultipartFile image) {
         User user = new User();
-        Optional<User> userEx = userRepository.findOneByLogin(userDTO.getLogin());
+        Optional<User> userEx = userRepository.findOneByLoginIgnoreCase(userDTO.getLogin());
         if(userEx.isPresent()){
             return new ServiceResult<>(null, org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR, "Username is existed");
         }
@@ -185,7 +185,10 @@ public class UserService {
         if(userEx.isPresent()){
             return new ServiceResult<>(null, HttpStatus.INSUFFICIENT_STORAGE, "Email is existed");
         }
-        String imageUrl = amazonClient.uploadFile(image);
+        String imageUrl = "https://locnvgraduation.s3.ap-southeast-1.amazonaws.com/150-1503945_transparent-user-png-default-user-image-png-png.png";
+        if(Objects.nonNull(image)){
+            imageUrl = amazonClient.uploadFile(image);
+        }
         user.setLogin(userDTO.getLogin().toLowerCase());
         user.setAddress(userDTO.getAddress());
         user.setFullName(userDTO.getFullName());
@@ -216,7 +219,7 @@ public class UserService {
         }else{
             HashSet<Authority> authority = new HashSet<>();
             Authority a = new Authority();
-            a.setName(Constants.DEFAULT_ROLE);
+            a.setName(AuthoritiesConstants.MANAGE);
             authority.add(a);
             user.setAuthorities(authority);
         }
@@ -277,23 +280,23 @@ public class UserService {
     /**
      * Update basic information (first name, last name, email, language) for the current user.
      *
-     * @param firstName first name of user.
+//     * @param firstName first name of user.
      * @param lastName  last name of user.
      * @param email     email id of user.
-     * @param langKey   language key.
+//     * @param langKey   language key.
      * @param imageUrl  image URL of user.
      */
-    public void updateUser(String firstName, String lastName, String email, String langKey, String imageUrl) {
+    public void updateUser(String phone, String lastName, String email, String address, String imageUrl) {
         SecurityUtils
             .getCurrentUserLogin()
             .flatMap(userRepository::findOneByLogin)
             .ifPresent(user -> {
-                user.setAddress(firstName);
+                user.setAddress(address);
+                user.setPhone(phone);
                 user.setFullName(lastName);
                 if (email != null) {
                     user.setEmail(email.toLowerCase());
                 }
-                user.setLangKey(langKey);
                 user.setImageUrl(imageUrl);
                 log.debug("Changed Information for User: {}", user);
             });
@@ -357,5 +360,13 @@ public class UserService {
     @Transactional(readOnly = true)
     public List<String> getAuthorities() {
         return authorityRepository.findAll().stream().map(Authority::getName).collect(Collectors.toList());
+    }
+
+    public List<AdminUserDTO> getAllUsers(String keySearch, String role, String roleAdmin, int page, int pageSize){
+        return userRepository.findAllByKey(keySearch, role, roleAdmin, page, pageSize).stream().map(AdminUserDTO::new).collect(Collectors.toList());
+    }
+
+    public int totalAllUser(String keySearch, String role, String roleAdmin){
+        return userRepository.totalRecordAllUser(keySearch, role, roleAdmin);
     }
 }

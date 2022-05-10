@@ -110,7 +110,6 @@ class ProductsResourceIT {
             .lastModifiedDate(DEFAULT_LAST_MODIFIED_DATE)
             .lastModifiedBy(DEFAULT_LAST_MODIFIED_BY)
             .image(DEFAULT_IMAGE)
-            .detailImages(DEFAULT_DETAIL_IMAGES)
             .brand(DEFAULT_BRAND)
             .productDetails(DEFAULT_PRODUCT_DETAILS)
             .descriptionDocument(DEFAULT_DESCRIPTION_DOCUMENT)
@@ -134,7 +133,6 @@ class ProductsResourceIT {
             .lastModifiedDate(UPDATED_LAST_MODIFIED_DATE)
             .lastModifiedBy(UPDATED_LAST_MODIFIED_BY)
             .image(UPDATED_IMAGE)
-            .detailImages(UPDATED_DETAIL_IMAGES)
             .brand(UPDATED_BRAND)
             .productDetails(UPDATED_PRODUCT_DETAILS)
             .descriptionDocument(UPDATED_DESCRIPTION_DOCUMENT)
@@ -169,7 +167,6 @@ class ProductsResourceIT {
         assertThat(testProducts.getLastModifiedDate()).isEqualTo(DEFAULT_LAST_MODIFIED_DATE);
         assertThat(testProducts.getLastModifiedBy()).isEqualTo(DEFAULT_LAST_MODIFIED_BY);
         assertThat(testProducts.getImage()).isEqualTo(DEFAULT_IMAGE);
-        assertThat(testProducts.getDetailImages()).isEqualTo(DEFAULT_DETAIL_IMAGES);
         assertThat(testProducts.getBrand()).isEqualTo(DEFAULT_BRAND);
         assertThat(testProducts.getProductDetails()).isEqualTo(DEFAULT_PRODUCT_DETAILS);
         assertThat(testProducts.getDescriptionDocument()).isEqualTo(DEFAULT_DESCRIPTION_DOCUMENT);
@@ -277,7 +274,6 @@ class ProductsResourceIT {
             .lastModifiedDate(UPDATED_LAST_MODIFIED_DATE)
             .lastModifiedBy(UPDATED_LAST_MODIFIED_BY)
             .image(UPDATED_IMAGE)
-            .detailImages(UPDATED_DETAIL_IMAGES)
             .brand(UPDATED_BRAND)
             .productDetails(UPDATED_PRODUCT_DETAILS)
             .descriptionDocument(UPDATED_DESCRIPTION_DOCUMENT)
@@ -304,7 +300,6 @@ class ProductsResourceIT {
         assertThat(testProducts.getLastModifiedDate()).isEqualTo(UPDATED_LAST_MODIFIED_DATE);
         assertThat(testProducts.getLastModifiedBy()).isEqualTo(UPDATED_LAST_MODIFIED_BY);
         assertThat(testProducts.getImage()).isEqualTo(UPDATED_IMAGE);
-        assertThat(testProducts.getDetailImages()).isEqualTo(UPDATED_DETAIL_IMAGES);
         assertThat(testProducts.getBrand()).isEqualTo(UPDATED_BRAND);
         assertThat(testProducts.getProductDetails()).isEqualTo(UPDATED_PRODUCT_DETAILS);
         assertThat(testProducts.getDescriptionDocument()).isEqualTo(UPDATED_DESCRIPTION_DOCUMENT);
@@ -392,7 +387,6 @@ class ProductsResourceIT {
         partialUpdatedProducts
             .code(UPDATED_CODE)
             .createDate(UPDATED_CREATE_DATE)
-            .detailImages(UPDATED_DETAIL_IMAGES)
             .brand(UPDATED_BRAND)
             .productDetails(UPDATED_PRODUCT_DETAILS)
             .video(UPDATED_VIDEO)
@@ -417,7 +411,6 @@ class ProductsResourceIT {
         assertThat(testProducts.getLastModifiedDate()).isEqualTo(DEFAULT_LAST_MODIFIED_DATE);
         assertThat(testProducts.getLastModifiedBy()).isEqualTo(DEFAULT_LAST_MODIFIED_BY);
         assertThat(testProducts.getImage()).isEqualTo(DEFAULT_IMAGE);
-        assertThat(testProducts.getDetailImages()).isEqualTo(UPDATED_DETAIL_IMAGES);
         assertThat(testProducts.getBrand()).isEqualTo(UPDATED_BRAND);
         assertThat(testProducts.getProductDetails()).isEqualTo(UPDATED_PRODUCT_DETAILS);
         assertThat(testProducts.getDescriptionDocument()).isEqualTo(DEFAULT_DESCRIPTION_DOCUMENT);
@@ -445,7 +438,6 @@ class ProductsResourceIT {
             .lastModifiedDate(UPDATED_LAST_MODIFIED_DATE)
             .lastModifiedBy(UPDATED_LAST_MODIFIED_BY)
             .image(UPDATED_IMAGE)
-            .detailImages(UPDATED_DETAIL_IMAGES)
             .brand(UPDATED_BRAND)
             .productDetails(UPDATED_PRODUCT_DETAILS)
             .descriptionDocument(UPDATED_DESCRIPTION_DOCUMENT)
@@ -471,7 +463,6 @@ class ProductsResourceIT {
         assertThat(testProducts.getLastModifiedDate()).isEqualTo(UPDATED_LAST_MODIFIED_DATE);
         assertThat(testProducts.getLastModifiedBy()).isEqualTo(UPDATED_LAST_MODIFIED_BY);
         assertThat(testProducts.getImage()).isEqualTo(UPDATED_IMAGE);
-        assertThat(testProducts.getDetailImages()).isEqualTo(UPDATED_DETAIL_IMAGES);
         assertThat(testProducts.getBrand()).isEqualTo(UPDATED_BRAND);
         assertThat(testProducts.getProductDetails()).isEqualTo(UPDATED_PRODUCT_DETAILS);
         assertThat(testProducts.getDescriptionDocument()).isEqualTo(UPDATED_DESCRIPTION_DOCUMENT);
