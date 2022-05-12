@@ -5,6 +5,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import liquibase.pro.packaged.E;
 import locnv.haui.config.Constants;
 import locnv.haui.domain.Authority;
 import locnv.haui.domain.User;
@@ -275,6 +276,21 @@ public class UserService {
                 userRepository.delete(user);
                 log.debug("Deleted User: {}", user);
             });
+    }
+
+    public ServiceResult<?> updateStatus(AdminUserDTO adminUserDTO){
+        Optional<User> u = userRepository.findOneByLoginIgnoreCase(adminUserDTO.getLogin());
+        if(u.isEmpty()){
+            return new ServiceResult<>(null, HttpStatus.INTERNAL_SERVER_ERROR, "User not found");
+        }
+        User u1 = u.get();
+        u1.setActivated(!u1.isActivated());
+        try{
+            userRepository.save(u1);
+            return new ServiceResult<>(null, HttpStatus.OK, "OK");
+        }catch (Exception e){
+            return new ServiceResult<>(null, HttpStatus.INTERNAL_SERVER_ERROR, "Loi save");
+        }
     }
 
     /**

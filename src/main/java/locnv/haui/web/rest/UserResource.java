@@ -231,11 +231,11 @@ public class UserResource {
         return ResponseEntity.ok(rs);
     }
 
-//    @PostMapping("/changeStatus")
-//    @PreAuthorize("hasAuthority(\"" + AuthoritiesConstants.ADMIN + "\")")
-//    public ResponseEntity<?> changeStatus(@RequestBody AdminUserDTO adminUserDTO) {
-//        log.debug("REST request to create managerUser all User for an admin");
-//        ServiceResult<?> rs = userService.createUser1(userVM, null);
-//        return ResponseEntity.ok(rs);
-//    }
+    @PostMapping("/changeStatus")
+    @PreAuthorize("hasAuthority(\"" + AuthoritiesConstants.ADMIN + "\")")
+    public ResponseEntity<?> changeStatus(@RequestBody AdminUserDTO adminUserDTO) {
+        log.debug("REST request to create managerUser all User for an admin");
+        ServiceResult<?> rs = userService.updateStatus(adminUserDTO);
+        return ResponseEntity.ok(rs);
+    }
 }

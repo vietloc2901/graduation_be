@@ -6,6 +6,7 @@ import java.util.Optional;
 import locnv.haui.service.dto.DataDTO;
 import locnv.haui.service.dto.OrdersDTO;
 import locnv.haui.service.dto.ServiceResult;
+import locnv.haui.service.dto.StatisticDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -65,4 +66,6 @@ public interface OrdersService {
     ServiceResult cancelOrder(OrdersDTO ordersDTO);
 
     List<OrdersDTO> getDataExport(OrdersDTO ordersDTO);
+
+    StatisticDTO statistic(StatisticDTO statisticDTO);
 }

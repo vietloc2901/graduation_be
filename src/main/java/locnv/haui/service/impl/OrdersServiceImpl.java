@@ -1,8 +1,9 @@
 package locnv.haui.service.impl;
 
 import java.math.BigInteger;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -13,15 +14,12 @@ import locnv.haui.domain.User;
 import locnv.haui.repository.OrderItemsRepository;
 import locnv.haui.repository.OrdersCustomRepository;
 import locnv.haui.repository.OrdersRepository;
+import locnv.haui.repository.StatisticRepository;
 import locnv.haui.service.OrdersService;
 import locnv.haui.service.UserService;
-import locnv.haui.service.dto.DataDTO;
-import locnv.haui.service.dto.OrderItemsDTO;
-import locnv.haui.service.dto.OrdersDTO;
-import locnv.haui.service.dto.ServiceResult;
+import locnv.haui.service.dto.*;
 import locnv.haui.service.mapper.OrderItemsMapper;
 import locnv.haui.service.mapper.OrdersMapper;
-import org.aspectj.weaver.ast.Or;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -52,13 +50,16 @@ public class OrdersServiceImpl implements OrdersService {
 
     private final OrdersCustomRepository ordersCustomRepository;
 
-    public OrdersServiceImpl(OrdersRepository ordersRepository, OrdersMapper ordersMapper, UserService userService, OrderItemsRepository orderItemsRepository, OrderItemsMapper orderItemsMapper, OrdersCustomRepository ordersCustomRepository) {
+    private final StatisticRepository statisticRepository;
+
+    public OrdersServiceImpl(OrdersRepository ordersRepository, OrdersMapper ordersMapper, UserService userService, OrderItemsRepository orderItemsRepository, OrderItemsMapper orderItemsMapper, OrdersCustomRepository ordersCustomRepository, StatisticRepository statisticRepository) {
         this.ordersRepository = ordersRepository;
         this.ordersMapper = ordersMapper;
         this.userService = userService;
         this.orderItemsRepository = orderItemsRepository;
         this.orderItemsMapper = orderItemsMapper;
         this.ordersCustomRepository = ordersCustomRepository;
+        this.statisticRepository = statisticRepository;
     }
 
     @Override
@@ -230,6 +231,27 @@ public class OrdersServiceImpl implements OrdersService {
             o.setStatusString(getStatus(o.getStatus()));
         }
 
+        return rs;
+    }
+
+    @Override
+    public StatisticDTO statistic(StatisticDTO statisticDTO) {
+        String fromDateCurrentStr  = statisticDTO.getMonthForStatistic()+"-01";
+        LocalDate temp = LocalDate.parse(fromDateCurrentStr);
+        LocalDate startOfMonth = temp.with(TemporalAdjusters.firstDayOfMonth());
+        LocalDate endOfMonth = temp.with(TemporalAdjusters.lastDayOfMonth());
+        StatisticDTO rs = new StatisticDTO();
+        ZonedDateTime startDate = ZonedDateTime.ofLocal(startOfMonth.atStartOfDay(), ZoneId.systemDefault(), ZoneOffset.UTC);
+        ZonedDateTime endDate = ZonedDateTime.ofLocal(endOfMonth.atTime(23,59,59), ZoneId.systemDefault(),ZoneOffset.UTC);
+
+        rs.setTotalOrders(ordersRepository.getCountOrders(startDate, endDate));
+        rs.setTotalDoneOrders(ordersRepository.getCountOrdersByStatus("DONE", startDate, endDate));
+        rs.setTotalWaitingOrders(ordersRepository.getCountOrdersByStatus("WAITING", startDate, endDate));
+        rs.setTotalPreparingOrders(ordersRepository.getCountOrdersByStatus("PREPARING", startDate, endDate));
+        rs.setTotalTransferOrders(ordersRepository.getCountOrdersByStatus("TRANSFERING", startDate, endDate));
+        rs.setTotalCancelOrders(ordersRepository.getCountOrdersByStatus("CANCEL", startDate, endDate));
+        rs.setQuantityPerProducts(statisticRepository.quantityPerProducts(startDate, endDate));
+        rs.setRevenuePerProducts(statisticRepository.revenuePerProducts(startDate, endDate));
         return rs;
     }
 

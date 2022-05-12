@@ -263,4 +263,14 @@ public class OrdersResource {
         listColumn.add(new ExcelColumn("sumPrice", Translator.toLocale("order.excelTitle.sumPrice"), ExcelColumn.ALIGN_MENT.LEFT));
         return listColumn;
     }
+
+    @PostMapping("/statistic")
+    public ResponseEntity<?> statistic(@RequestBody StatisticDTO statisticDTO) throws IOException, IllegalAccessException {
+
+        StatisticDTO rs = new StatisticDTO();
+        rs = ordersService.statistic(statisticDTO);
+
+        return ResponseEntity.ok(rs);
+    }
+
 }
